@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>IceCube viewer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <link type="text/css" rel="stylesheet" href="main.css">
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>
+  <script type="module" src='./js/loadIceCube.js'></script>
+  <style>
+    #canvas {
+      background-color: #eee;
+      width: 800px;
+      height: 533px;
+      border: 0px solid black;
+      margin: 5px;
+      padding: 0px;
+      position: static; /* fixed or static */
+      top: 5px;
+      left: 5px;
+    }
+
+    .parent {
+      border: 0px solid black;
+      margin: 1rem;
+      padding: 0.2em 0.2rem;
+      text-align: center;
+    }
+    .child {
+      display: inline-block;
+      border: 0px solid black;
+      padding: 0.1rem 0.1rem;
+      vertical-align: middle;
+    } 
+    #myProgress {
+      width: 50%;
+      background-color: #ccc;
+    }
+
+    #myBar {
+      width: 1%;
+      height: 10px;
+      background-color: #0492c2;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<div class="parent">
+<div class="child">
+  <div id="canvas"></div>
+</div>
+</div>
+
+
+</div>
+
+<div class='parent' style="width: 100%;">
+
+  <div class='child' style="width: 40%;"><button id="playPauseButtonId">Play</button> </div>
+  <div class="child" style="width: 40%;">
+  <!-- <button id="pauseButtonId">Pause</button> -->
+
+  <div id="timer"></div>
+  <div id="myProgress">
+  <div id="myBar"></div>
+</div>
+
+</div>
+
+</body>
+</html>
