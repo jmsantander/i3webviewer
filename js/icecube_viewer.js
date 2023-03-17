@@ -1,9 +1,7 @@
 // Draw the IceCube detector
 
-//import * as THREE from './build/three.module.js';
-//import { XYZLoader } from './js/jsm/loaders/XYZLoader.js';
-import { XYZLoader } from 'https://unpkg.com/three@0.150.1/examples/jsm/loaders/XYZLoader.js';
-import * as THREE from 'https://unpkg.com/three@0.150.1/build/three.module.js';
+import * as THREE from 'three';
+import { XYZLoader } from 'XYZLoader';
 
 export class I3Detector {
 

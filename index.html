@@ -4,9 +4,20 @@
   <title>IceCube viewer</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <link type="text/css" rel="stylesheet" href="main.css">
+  <link type="text/css" rel="stylesheet" href="./css/main.css">
   <script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>
+
+  <script type="importmap">
+        {
+            "imports": {
+                "OrbitControls": "https://unpkg.com/three@0.150.1/examples/jsm/controls/OrbitControls.js",
+                "XYZLoader": "https://unpkg.com/three@0.150.1/examples/jsm/loaders/XYZLoader.js",
+                "three": "https://unpkg.com/three@0.150.1/build/three.module.js"
+            }
+        }
+  </script>
   <script type="module" src='./js/loadIceCube.js'></script>
+
   <style>
     #canvas {
       background-color: #eee;

@@ -3,19 +3,8 @@
    // 2023
 
    import I3Detector from './icecube_viewer.js';
-   import * as utils from './utils.js'
-
-  /*
-   import * as THREE from './build/three.module.js';
-   import { OrbitControls } from './js/jsm/controls/OrbitControls.js';
-   import Stats from './js/jsm/libs/stats.module.js'
-   */
-   
-   
-   import * as THREE from 'https://unpkg.com/three@0.150.1/build/three.module.js';
-   import { OrbitControls } from 'https://unpkg.com/three@0.150.1/examples/jsm/controls/OrbitControls.js';
-   //import Stats from './js/jsm/libs/stats.module.js'
-
+   import * as THREE from 'three';
+   import { OrbitControls } from 'OrbitControls';
 
    let camera, scene, renderer;
 
@@ -25,11 +14,9 @@
    init();
    animate();
 
-
   // Initialize the scene and load the UHECRs
 
   function init() {
-    //camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 2000000 );
     camera = new THREE.PerspectiveCamera( 60, 700 / 500., 0.1, 2000000 );
 
     camera.position.set( 1300, 0, 1300 );
