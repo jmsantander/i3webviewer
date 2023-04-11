@@ -4,83 +4,109 @@
   <title>IceCube viewer</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Oswald|Raleway|Playfair+Display|Quicksand&display=swap" rel="stylesheet">
   <link type="text/css" rel="stylesheet" href="./css/main.css">
   <script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>
 
-  <script type="importmap">
-        {
-            "imports": {
-                "OrbitControls": "https://unpkg.com/three@0.150.1/examples/jsm/controls/OrbitControls.js",
-                "XYZLoader": "https://unpkg.com/three@0.150.1/examples/jsm/loaders/XYZLoader.js",
-                "three": "https://unpkg.com/three@0.150.1/build/three.module.js"
-            }
-        }
+
+
+  <script type="text/javascript"> 
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear().toString().substr(-2);
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      return `${year}${month.toString().padStart(2, '0')}${day.toString().padStart(2, '0')}`;
+    }
+
+    function getTitle(time, alerttype) {
+      return "IC" + formatDate(time) + "-" + alerttype;
+    }
+
+    function getViewerURL(runid, eventid) {
+      return "./viewer.html?event=" + eventid + "&run=" + runid;
+    }
+
+    function insertCell(row, value, type="td") {
+      const typeCell = document.createElement(type);
+      const typeText = document.createTextNode(value);            
+      typeCell.appendChild(typeText);
+      row.appendChild(typeCell);  
+    }
+
+    // Define the URL of the JSON file
+    const url = "./xyz/pulses4viz/fileList.json";
+
+    // Load the JSON file using fetch
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        // Extract the "time" and "direction" values from each file
+        const values = data.fileList.map(file => {
+          return fetch(file)
+            .then(response => response.json())
+            .then(data => {
+              return {
+                alerttype: data.alerttype,
+                runid: data.runid,
+                eventid: data.eventid,
+                time: data.time,
+              };
+            });
+        });
+
+        // Wait for all the values to be extracted
+        Promise.all(values).then(valueList => {
+          // Create the HTML table with the values
+          const table = document.createElement("table");
+          const thead = document.createElement("thead");
+          const tbody = document.createElement("tbody");
+          const headerRow = document.createElement("tr");
+
+          insertCell(headerRow, "Event", "th");
+          insertCell(headerRow, "Type", "th");
+          insertCell(headerRow, "Time", "th");
+          insertCell(headerRow, "RunID", "th");
+          insertCell(headerRow, "EventID", "th");
+
+          thead.appendChild(headerRow);
+          
+          valueList.forEach(value => {
+            const row = document.createElement("tr");
+
+            const link = document.createElement('a');
+            link.setAttribute("href", getViewerURL(value.runid, value.eventid));
+            link.innerHTML = getTitle(value.time, value.alerttype);
+            const typeCell = document.createElement("td");
+            typeCell.appendChild(link);
+            row.appendChild(typeCell); 
+
+            //const event = "<a href='" + getViewerURL(value.runid, value.eventid) + "'>" + getTitle(value.time, value.alerttype) + "</a>";
+
+            insertCell(row, value.alerttype); 
+            insertCell(row, value.time);
+            insertCell(row, value.runid);   
+            insertCell(row, value.eventid);              
+            
+            tbody.appendChild(row);
+          });
+          table.appendChild(thead);
+          table.appendChild(tbody);
+          
+          document.body.appendChild(table);
+        
+        });
+      })
+      .catch(error => console.error(error));
+
   </script>
-  <script type="module" src='./js/loadIceCube.js'></script>
-
-  <style>
-    #canvas {
-      background-color: #eee;
-      width: 800px;
-      height: 533px;
-      border: 0px solid black;
-      margin: 5px;
-      padding: 0px;
-      position: static; /* fixed or static */
-      top: 5px;
-      left: 5px;
-    }
-
-    .parent {
-      border: 0px solid black;
-      margin: 1rem;
-      padding: 0.2em 0.2rem;
-      text-align: center;
-    }
-    .child {
-      display: inline-block;
-      border: 0px solid black;
-      padding: 0.1rem 0.1rem;
-      vertical-align: middle;
-    } 
-    #myProgress {
-      width: 50%;
-      background-color: #ccc;
-    }
-
-    #myBar {
-      width: 1%;
-      height: 10px;
-      background-color: #0492c2;
-    }
-
-  </style>
 
 </head>
 
 <body>
 
-<div class="parent">
-<div class="child">
-  <div id="canvas"></div>
-</div>
-</div>
-
-
-</div>
-
-<div class='parent' style="width: 100%;">
-
-  <div class='child' style="width: 40%;"><button id="playPauseButtonId">Play</button> </div>
-  <div class="child" style="width: 40%;">
-  <!-- <button id="pauseButtonId">Pause</button> -->
-
-  <div id="timer"></div>
-  <div id="myProgress">
-  <div id="myBar"></div>
-</div>
-
-</div>
+<h1> Event viewer </h1>
 
 </body>
 </html>

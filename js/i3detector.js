@@ -2,6 +2,14 @@
 
 import * as THREE from 'three';
 import { XYZLoader } from 'XYZLoader';
+import { Line2 } from 'Line2';
+import { LineMaterial } from 'LineMaterial';
+import { LineGeometry } from 'LineGeometry';
+
+
+
+import I3Track from './i3track.js';
+
 
 export class I3Detector {
 
@@ -13,7 +21,9 @@ export class I3Detector {
         this.renderer;
 
         this.playFlag = false;
-        this.clock;
+        this.clock = new THREE.Clock();
+
+        this.i3track;
 
         this.loadI3Geometry(filename, i3stringfile);
     }
@@ -38,6 +48,10 @@ export class I3Detector {
 
     getPlayStatus() {
         return this.playFlag;
+    }
+
+    loadI3Track(filename) {
+        this.i3track = new I3Track(filename);
     }
 
     loadI3Geometry(filename, i3stringfile) {
@@ -70,7 +84,7 @@ export class I3Detector {
         var floader = new THREE.FileLoader();
         var lineMaterial = new THREE.LineBasicMaterial( { 
             color: 0xaaaaaa,
-            linewidth: 3
+            linewidth: 0.5
         } );
 
         floader.load(
@@ -103,26 +117,13 @@ export class I3Detector {
 
     };
 
-    getI3ParticleTrack(t, x0, y0, z0, t0, beta, theta, phi) {
-        const degree = Math.PI / 180.;
-        const c = 299792458.;
-        var beta = 1.;
-
-        var v0 = beta * c;
-        var xv = v0 * Math.cos(phi * degree) * Math.sin(theta*degree) * (t-t0) + x0;
-        var yv = v0 * Math.sin(phi * degree) * Math.sin(theta*degree) * (t-t0) + y0;
-        var zv = v0 * Math.cos(theta * degree) * (t-t0) + z0;
-        return [xv, yv, zv];
-    }
-
 
     plotI3Event(filename) {
         var loader = new THREE.FileLoader();
         var self = this;
 
         var geometry = new THREE.BufferGeometry();
-       
-
+    
 
         loader.load(
         // resource URL
@@ -183,9 +184,6 @@ export class I3Detector {
             console.error( 'An error happened' );
         }
         );
-
-        
-
     }
 
 
@@ -219,12 +217,12 @@ export class I3Detector {
     }
 
 
-    playI3Event(filename) {
+    async playI3Event(filename) {
         var loader = new THREE.FileLoader();
         var self = this;
 
         loader.load(
-        // resource URL
+
         filename,
 
         // onLoad callback
@@ -267,8 +265,8 @@ export class I3Detector {
 
 
 
-            self.clock = new THREE.Clock();
-            var timePadding = 1000;
+            //self.clock = new THREE.Clock();
+            var timePadding = 4000;
             var tstart = tmin[4] - timePadding;
             var tend   = tmax[4] + timePadding;
             var ti = tstart;
@@ -279,8 +277,6 @@ export class I3Detector {
             // Setting up the hit DOM spheres
 
             var sphmaterial = new THREE.MeshLambertMaterial({ });  
-
-            //var sphmaterial = new THREE.MeshLambertMaterial({vertexColors: THREE.VertexColors});          
             const isphgeo = new THREE.SphereGeometry( 1 );
             const instancedSphere = new THREE.InstancedMesh(isphgeo, sphmaterial, 5160);
 
@@ -302,37 +298,38 @@ export class I3Detector {
                 linewidth: 3
             } );
 
-            /*
-            var x0 = 5.20183586e+02;
-            var y0 = 4.79645335e+01;
-            var z0 = -2.76325293e+02;
-            var tref = 9.98326425e-06;
-            var beta0  = 8.59717137e-01;
-            var theta0 = 6.12972746e+01;
-            var phi0   = 1.48859226e+02;
-            */
+            const coneGeometry = new THREE.ConeGeometry(15, 40, 32);
+            const coneMaterial = new THREE.MeshStandardMaterial({ color: 0xff00ff });
+            const cone = new THREE.Mesh(coneGeometry, coneMaterial);
+            self.scene.add(cone);
+
+            self.i3track.getThetaPhi().then(ThetaPhi => {            
+                const xAxis = new THREE.Vector3(1, 0, 0);
+                const yAxis = new THREE.Vector3(0, 1, 0);
+                cone.rotateOnWorldAxis(xAxis, ThetaPhi[0]);
+                cone.rotateOnWorldAxis(yAxis, Math.PI/2. -ThetaPhi[1]);
+
+            });
 
 
-            var x0 = 1.04440247e+03;
-            var y0 = -2.48253428e+02;
-            var z0 = -4.96898832e+02;
-            var tref = 7.58525043e-06;
-            var beta0  = 4.38318448e-01;
-            var theta0 = 5.60210311e+01;
-            var phi0   = 1.67442576e+02;
+            //const axesHelper = new THREE.AxesHelper(400);
+            //self.scene.add(axesHelper);
 
 
-            var startPointOnTrack = self.getI3ParticleTrack(ti / 1e9, x0, y0, z0, tref, beta0, theta0, phi0);
             const geometry = new THREE.BufferGeometry();
             const MAX_POINTS = 5200;
 
             var positions = new Float32Array( MAX_POINTS * 3 ); // 3 vertices per point
 
-            for (let j = 0; j < MAX_POINTS; j++) {
-                positions[3*j] = startPointOnTrack[0]; 
-                positions[3*j + 1] = startPointOnTrack[2];
-                positions[3*j + 2] = startPointOnTrack[1];
-            }
+            self.i3track.getPointOnTrack(ti/1e9).then(startPointOnTrack => {
+                for (let j = 0; j < MAX_POINTS; j++) {
+                    positions[3*j] = startPointOnTrack[0]; 
+                    positions[3*j + 1] = startPointOnTrack[2];
+                    positions[3*j + 2] = startPointOnTrack[1];
+
+                    cone.position.set(startPointOnTrack[0], startPointOnTrack[2], startPointOnTrack[1]);
+                }
+            });
 
             geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
             const drawCount = 2; // draw the first 2 points, only
@@ -344,7 +341,8 @@ export class I3Detector {
 
             const linePositions = line.geometry.attributes.position.array;
             let indexl = 0;
-            
+
+
 
             function render() {
 
@@ -357,7 +355,9 @@ export class I3Detector {
                     delta = self.clock.getDelta();
                     ti += delta * speed;
 
-                    $('#timer').html(Math.round(ti));
+                    // Update the time in the HTML
+
+                    $('#timer').html(Math.round(ti/10.) + " ns");
 
                     var elem = document.getElementById("myBar");
 
@@ -400,13 +400,14 @@ export class I3Detector {
 
 
                     // Draw animated line
-                    
 
-                    var pointOnTrack = self.getI3ParticleTrack(ti / 1e9, x0, y0, z0, tref, beta0, theta0, phi0);
+                    self.i3track.getPointOnTrack(ti/1e9).then(pointOnTrack => {
+                        linePositions[ indexl++ ] = pointOnTrack[0];
+                        linePositions[ indexl++ ] = pointOnTrack[2];
+                        linePositions[ indexl++ ] = pointOnTrack[1];
 
-                    linePositions[ indexl++ ] = pointOnTrack[0];
-                    linePositions[ indexl++ ] = pointOnTrack[2];
-                    linePositions[ indexl++ ] = pointOnTrack[1];
+                        cone.position.set(pointOnTrack[0], pointOnTrack[2], pointOnTrack[1]);
+                    });
 
                     line.geometry.setDrawRange( 0, indexl );
                     line.geometry.attributes.position.needsUpdate = true;          
@@ -423,14 +424,18 @@ export class I3Detector {
 
                         let dummy = new THREE.Object3D();
                         
-                        for (let j = 0; j < MAX_POINTS; j++) {
-                            positions[3*j] = startPointOnTrack[0]; 
-                            positions[3*j + 1] = startPointOnTrack[2];
-                            positions[3*j + 2] = startPointOnTrack[1];
-                            line.geometry.attributes.position.needsUpdate = true;          
-                            line.geometry.computeBoundingSphere();
-                        }
-                        
+                        self.i3track.getPointOnTrack(ti/1e9).then(startPointOnTrack => {
+                            for (let j = 0; j < MAX_POINTS; j++) {
+                                positions[3*j] = startPointOnTrack[0]; 
+                                positions[3*j + 1] = startPointOnTrack[2];
+                                positions[3*j + 2] = startPointOnTrack[1];
+                                line.geometry.attributes.position.needsUpdate = true; 
+                                line.geometry.computeBoundingSphere();
+
+                                cone.position.set(startPointOnTrack[0], startPointOnTrack[2], startPointOnTrack[1]);
+                            }
+                        });
+        
 
                         for (let k = 0; k < ids.length; k++) {
                             instancedSphere.getMatrixAt(ids[k], matrix);
@@ -463,200 +468,9 @@ export class I3Detector {
 
     }
 
-
-    playI3EventJSON(filename) {
-        var self = this;
-        self.clock = new THREE.Clock();
-
-        fetch(filename)
-            .then((response) => response.json())
-            .then((json) => {
-
-            // Start and end times
-
-            var tmax = Math.max.apply(Math, json['i3event']['time']);
-            var tmin = Math.max.apply(Math, json['i3event']['time']);
-
-            
-            var timePadding = 2000;
-            var tstart = tmin - timePadding;
-            var tend   = tmax + timePadding;
-            var ti = tstart;
-
-            var delta = 0;
-            var speed = 3000;
-
-            // Setting up the hit DOM spheres
-
-            var sphmaterial = new THREE.MeshLambertMaterial({ });  
-
-            const isphgeo = new THREE.SphereGeometry( 1 );
-            const instancedSphere = new THREE.InstancedMesh(isphgeo, sphmaterial, 2500);
-
-            // Thanks, ChatGPT for catching this one!
-            for (let i = 0; i < instancedSphere.count; i++) {
-                const color = new THREE.Color();
-                instancedSphere.setColorAt(i, color);
-            }
-
-            instancedSphere.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-            self.scene.add(instancedSphere);
-            
-            const matrix = new THREE.Matrix4();
-
-            // Line parameters
-
-            var lineMaterial = new THREE.LineBasicMaterial( { 
-                color: "magenta",
-                linewidth: 3
-            } );
-
-            /*
-            var x0 = 5.20183586e+02;
-            var y0 = 4.79645335e+01;
-            var z0 = -2.76325293e+02;
-            var tref = 9.98326425e-06;
-            var beta0  = 8.59717137e-01;
-            var theta0 = 6.12972746e+01;
-            var phi0   = 1.48859226e+02;
-            */
-
-
-            var x0 = 1.04440247e+03;
-            var y0 = -2.48253428e+02;
-            var z0 = -4.96898832e+02;
-            var tref = 3.58525043e-06;
-            var beta0  = 4.38318448e-01;
-            var theta0 = 5.60210311e+01;
-            var phi0   = 1.67442576e+02;
-
-
-
-            var startPointOnTrack = self.getI3ParticleTrack(ti / 1e9, x0, y0, z0, tref, beta0, theta0, phi0);
-            const geometry = new THREE.BufferGeometry();
-            const MAX_POINTS = 5200;
-
-            var positions = new Float32Array( MAX_POINTS * 3 ); // 3 vertices per point
-
-            for (let j = 0; j < MAX_POINTS; j++) {
-                positions[3*j] = startPointOnTrack[0]; 
-                positions[3*j + 1] = startPointOnTrack[2];
-                positions[3*j + 2] = startPointOnTrack[1];
-            }
-
-            geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-            const drawCount = 2; // draw the first 2 points, only
-            geometry.setDrawRange( 0, drawCount );
-
-            const material = new THREE.LineBasicMaterial( { color: "magenta" } );
-            const line = new THREE.Line( geometry, material );
-            self.scene.add( line );
-
-            const linePositions = line.geometry.attributes.position.array;
-            let indexl = 0;
-
-            function render() {
-
-                requestAnimationFrame(render);
- 
-                if (self.playFlag) {
-
-                    //requestAnimationFrame(render);
-
-                    delta = self.clock.getDelta();
-                    ti += delta * speed;
-
-                    $('#timer').html(Math.round(ti));
-
-                    var elem = document.getElementById("myBar");
-
-                    var barWidth = Math.round((ti - tstart) * 100. / (tend - tstart));
-                    elem.style.width = barWidth + "%";
-
-                    var dom = 0;
-                    let ids = []
-
-                    // Draw hit DOMs
-
-                    for (let k = 0; k < json['i3event']['x'].length; k++) {
-                        if (ti > json['i3event']['time'][k]) {
-                          const x = json['i3event']['x'][k];
-                          const y = json['i3event']['y'][k];
-                          const z = json['i3event']['z'][k]
-                          var radius = json['i3event']['charge'][k]* 10;
-                          var hue = (json['i3event']['time'][k] - tmin)/(tmax - tmin);
-
-                          const color = new THREE.Color();
-                          color.setHSL(hue, 1, 0.5);
-                          
-                          matrix.makeScale(radius, radius, radius);
-                          matrix.setPosition(x, z, y);
-
-                          instancedSphere.setColorAt(dom, color);
-                          instancedSphere.setMatrixAt(dom, matrix);
-                          ids.push(dom);
-                          
-                          instancedSphere.instanceColor.needsUpdate = true;
-                          instancedSphere.instanceMatrix.needsUpdate = true;
-
-                          dom++;
-                        }                        
-                    }
-
-
-                    // Draw animated line
-
-                    var pointOnTrack = self.getI3ParticleTrack(ti / 1e9, x0, y0, z0, tref, beta0, theta0, phi0);
-
-                    linePositions[ indexl++ ] = pointOnTrack[0];
-                    linePositions[ indexl++ ] = pointOnTrack[2];
-                    linePositions[ indexl++ ] = pointOnTrack[1];
-
-                    line.geometry.setDrawRange( 0, indexl );
-                    line.geometry.attributes.position.needsUpdate = true;          
-                    line.geometry.computeBoundingSphere();
-
-                    // Loop
-
-                    if (ti > tend) {
-                        console.log("Animation ended");
-                        ti = tstart;
-                        indexl = 0;
-                        dom = 0;
-
-                        let dummy = new THREE.Object3D();
-
-                        for (let j = 0; j < MAX_POINTS; j++) {
-                            positions[3*j] = startPointOnTrack[0]; 
-                            positions[3*j + 1] = startPointOnTrack[2];
-                            positions[3*j + 2] = startPointOnTrack[1];
-                            line.geometry.attributes.position.needsUpdate = true;          
-                            line.geometry.computeBoundingSphere();
-                        }
-
-                        for (let k = 0; k < ids.length; k++) {
-                            instancedSphere.getMatrixAt(ids[k], matrix);
-                            matrix.decompose(dummy.position, dummy.quaternion, dummy.scale);
-                            dummy.scale.setScalar(0.);
-                            dummy.updateMatrix();
-                            instancedSphere.setMatrixAt(ids[k], dummy.matrix);
-                            instancedSphere.instanceMatrix.needsUpdate = true;
-                        }
-                    }
-                
-                }
-
-            } 
-
-            render();
-        }
-        );
-    }
    
 } // end of class 
 
 
-
-
-
 export default I3Detector;
+

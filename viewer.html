@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>IceCube viewer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Oswald|Raleway|Playfair+Display|Quicksand&display=swap" rel="stylesheet">
+  <link type="text/css" rel="stylesheet" href="./css/main.css">
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>
+
+  <script type="importmap">
+        {
+            "imports": {
+                "OrbitControls": "https://unpkg.com/three@0.150.1/examples/jsm/controls/OrbitControls.js",
+                "Line2": "https://unpkg.com/three@0.150.1/examples/jsm/lines/Line2.js",
+                "LineMaterial": "https://unpkg.com/three@0.150.1/examples/jsm/lines/LineMaterial.js",
+                "LineGeometry": "https://unpkg.com/three@0.150.1/examples/jsm/lines/LineGeometry.js",
+                "XYZLoader": "https://unpkg.com/three@0.150.1/examples/jsm/loaders/XYZLoader.js",
+                "three": "https://unpkg.com/three@0.150.1/build/three.module.js"
+            }
+        }
+  </script>
+
+  <!-- <script type="text/javascript" src="./js/event8756840_run137806.js"></script> -->
+  <!-- <script type="text/javascript" src="./js/event38132005_run137794.js"></script> -->
+
+  <!-- <script type="text/javascript" id="eventfile"></script> -->
+
+  <script type="text/javascript"> 
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventID = urlParams.get('event');
+    const runID = urlParams.get('run');
+
+    if (isNaN(eventID) || isNaN(runID)) {
+      alert("Event and/or run IDs are not valid!")
+    } else {
+
+      var i3event = {
+        pulses: `./xyz/pulses4viz/pulses_bronze_${runID}_${eventID}.txt`,
+        particle: `./xyz/pulses4viz/particle_bronze_${runID}_${eventID}.json`
+      };
+
+    //  const scriptTag = document.getElementById('eventfile');
+    //  scriptTag.src = i3event.particle;
+    }
+  </script>
+
+  <script type="module" src='./js/loadEvent.js'></script>
+</head>
+
+<body>
+
+<!--
+<div class="parent">
+<div class="child">
+  <div id="canvas"></div>
+</div>
+</div>
+-->
+
+
+<h1 id="title"></h1>
+<h3 id="subtitle"></h1>
+
+
+<div id="canvas"></div>
+
+
+<div class='parent'>
+
+  <div class='child'><button id="playPauseButtonId">Play</button> </div>
+  
+  <div class="child" style="width: 50%;">
+    <div id="myProgress"><div id="myBar"></div></div>
+  </div>
+  
+  <div class="child"><div id="timer"></div>
+
+</div>
+
+</body>
+</html>
