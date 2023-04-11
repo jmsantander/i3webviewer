@@ -12,4 +12,18 @@ Events should be written as an ASCII file with 5 columns for each hit DOM in the
 * charge
 * time
 
-Omit any headers or empty new lines in the file
+Particles are written as JSON files with the following format, with angles in radians, and positions in meters. 
+
+{
+  "theta": 1.5195243185640936,
+  "phi": 5.866665289189254,
+  "x0": 25.452789342940832,
+  "y0": 229.69367836049514,
+  "z0": -459.8218867995997,
+  "t0": 10197.474274695829,
+  "speed": 0.299792458,
+  "time": "2023-04-01 16:14:18.907",
+  "alerttype": "bronze",
+  "runid": 137794,
+  "eventid": 38132005
+}
