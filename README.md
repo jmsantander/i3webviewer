@@ -14,7 +14,7 @@ Events should be written as an ASCII file with 5 columns for each hit DOM in the
 
 Particles are written as JSON files with the following format, with angles in radians, and positions in meters. 
 
-{
+ {
   "theta": 1.5195243185640936,
   "phi": 5.866665289189254,
   "x0": 25.452789342940832,
@@ -26,4 +26,4 @@ Particles are written as JSON files with the following format, with angles in ra
   "alerttype": "bronze",
   "runid": 137794,
   "eventid": 38132005
-}
+ }
