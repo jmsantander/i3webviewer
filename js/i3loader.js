@@ -22,9 +22,9 @@ export class I3Loader {
   // Initialize the scene and load the UHECRs
 
   init() {
-    this.camera = new THREE.PerspectiveCamera( 60, 0.7, 0.1, 2000000 );
+    this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 20000 );
 
-    this.camera.position.set( 1200, 0, 1200 );
+    this.camera.position.set( 1500, 0, 1500 );
     //camera.rotation.order = 'YXZ';
 
     this.scene = new THREE.Scene();
@@ -58,11 +58,15 @@ export class I3Loader {
     //document.body.appendChild( container );
     //var width = 800;
     //var height = 533;
-    //this.renderer.setSize( width, height );
-    this.renderer.setViewport(0, 0, container.offsetWidth, container.offsetHeight);
+    this.renderer.setSize( window.innerWidth, window.innerHeight);
 
 
-    this.renderer.setSize(container.offsetWidth, container.offsetHeight); 
+    
+
+    //this.renderer.setViewport(0, 0, container.offsetWidth, container.offsetHeight);
+
+
+    //this.renderer.setSize(container.offsetWidth, container.offsetHeight); 
 
     this.renderer.setPixelRatio( window.devicePixelRatio );
     container.appendChild( this.renderer.domElement );
@@ -79,10 +83,13 @@ export class I3Loader {
 
   onWindowResize() {
     var container = document.getElementById( 'canvas' );
-    //this.camera.aspect = window.innerWidth / window.innerHeight;
-    this.camera.aspect = container.offsetWidth / container.offsetHeight;
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    //this.camera.aspect = container.offsetWidth / container.offsetHeight;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(container.offsetWidth, container.offsetHeight); 
+    //this.renderer.setSize(container.offsetWidth, container.offsetHeight); 
+
+    this.renderer.setSize(window.innerWidth, window.innerHeight); 
+
 
   }
 

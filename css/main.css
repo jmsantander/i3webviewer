@@ -1,7 +1,7 @@
 body {
-	margin: 1rem;
 	background-color: #eee;
 	color: #333;
+  margin: 0px;
 	font-size: 13px;
 	line-height: 24px;
 	overscroll-behavior: none;
@@ -10,35 +10,44 @@ body {
 }
 
 #canvas {
-  background-color: #eee;
-  width: 600px;
-  max-height: 50%;
-  max-width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+}
 
-  aspect-ratio: 0.7;
-  border: 0px solid #aaa;
-  margin: 5px;
-  padding: 0px;
-  position: static; /* fixed or static */
-  top: 5px;
-  left: 5px;
-  margin: auto;
+
+.header {
+  position: fixed; 
+  top: 0; 
+  width: 100%; 
+  background-color: rgba(0, 0, 0, 0.2); 
+  z-index: 1; 
 }
 
 
 .parent {
-  /*border: 1px solid black; */
   padding: 0em;
   text-align: center;
+  display: flex;
   margin: auto;
+  position: fixed; 
+  bottom: 0; 
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.2); 
+  z-index: 1; 
 }
 
 .child {
   display: inline-block;
   border: 0px solid black;
   padding: 0.1rem;
+  text-align: right;
   vertical-align: middle;
   margin: auto;
+  width: 25%;
 } 
 
 #myProgress {
@@ -54,10 +63,10 @@ body {
 
 #timer {
   width: 100%;
-  /*border: 1px solid red;*/
   height: 1rem;
   vertical-align: middle;
   display: table-cell;
+  font-family: IBM Plex Mono;
 }
 
 
