@@ -80,3 +80,39 @@ button {
   font-size: 16px;
 }
 
+/* CSS for responsive table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+/* For desktop devices */
+@media only screen and (min-width: 768px) {
+  /* Adjust table layout for desktop */
+  table {
+    font-size: 16px;
+  }
+
+  th, td {
+    padding: 12px;
+  }
+}
+
+/* For mobile devices */
+@media only screen and (max-width: 767px) {
+  /* Adjust table layout for mobile */
+  table {
+    font-size: 14px;
+  }
+
+  th, td {
+    padding: 8px;
+  }
+}
+
