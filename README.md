@@ -4,7 +4,9 @@
 
 This is a basic web-based viewer for IceCube events based on Three.JS
 
-Events should be written as an ASCII file with 5 columns for each hit DOM in the following format:
+Each event should include two associated files: a "pulses" file, and a "particle" file. 
+
+Pulses files should be written as an ASCII file with 5 columns for each hit DOM (pulses) in the following format:
 
 * x 
 * y 
@@ -12,7 +14,9 @@ Events should be written as an ASCII file with 5 columns for each hit DOM in the
 * charge
 * time
 
-Additionally, each event should have an associated "particle" with parameters from MC truth or reco. Particles are written as JSON files with the following format, with angles in radians, and positions in meters. 
+The pulses file is then placed in the <tt>./xyz/pulses4viz/</tt> folder. 
+
+The "particle" file should contain directional and time parameters for the event from MC truth or a reco. Particle files are written as JSON files with the following format, with angles in radians, and positions in meters. 
 
 <pre>
  {
@@ -29,3 +33,7 @@ Additionally, each event should have an associated "particle" with parameters fr
   "eventid": 38132005
  }
 </pre>
+
+Both particle and pulses files to be read by JS should be included in the file <tt>./xyz/pulses4viz/fileList.json</tt>.
+
+
