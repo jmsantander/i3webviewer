@@ -34,6 +34,15 @@ The "particle" file should contain directional and time parameters for the event
  }
 </pre>
 
-Both particle and pulses files to be read by JS should be included in the file <tt>./xyz/pulses4viz/fileList.json</tt>.
+Both particle and pulses files to be read by JS should be included in the JSON file <tt>./xyz/pulses4viz/fileList.json</tt>. The format of this file is:
+
+<pre>
+ {
+ "fileList": [
+	"./xyz/pulses4viz/particle_bronze_137806_8756840.json",
+	"./xyz/pulses4viz/particle_bronze_137794_38132005.json"
+	]
+}
+</pre>
 
 
