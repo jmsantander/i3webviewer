@@ -12,8 +12,9 @@ Events should be written as an ASCII file with 5 columns for each hit DOM in the
 * charge
 * time
 
-Particles are written as JSON files with the following format, with angles in radians, and positions in meters. 
+Additionally, each event should have an associated "particle" with parameters from MC truth or reco. Particles are written as JSON files with the following format, with angles in radians, and positions in meters. 
 
+<pre>
  {
   "theta": 1.5195243185640936,
   "phi": 5.866665289189254,
@@ -27,3 +28,4 @@ Particles are written as JSON files with the following format, with angles in ra
   "runid": 137794,
   "eventid": 38132005
  }
+</pre>
